@@ -1,0 +1,22 @@
+services:
+  # docker compose run --rm notebook  -> executes the notebook, result in ./output
+  notebook:
+    build: .
+    image: tp1-python-uv
+    volumes:
+      - ./output:/app/output
+
+  # docker compose up -d lab  -> Jupyter server on http://localhost:8888 (edits saved to this folder)
+  # In VS Code: Select Kernel > Existing Jupyter Server > http://localhost:8888/?token=uv-docker > "Python (uv-env)"
+  # (a token is required: without one VS Code's requests are rejected with "_xsrf argument missing")
+  lab:
+    image: tp1-python-uv
+    build: .
+    ports:
+      - "127.0.0.1:8888:8888"
+    volumes:
+      - ./:/app/work
+    working_dir: /app/work
+    environment:
+      - JUPYTER_TOKEN=uv-docker
+    command: jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
